@@ -48,3 +48,17 @@ Hakim's open source work is supported by <a href="https://github.com/sponsors/ha
 <div align="center">
   MIT licensed | Copyright © 2011-2024 Hakim El Hattab, https://hakim.se
 </div>
+
+---
+
+# Getting started (F&amp;)
+
+* Install pipx
+* pipx install nodeenv
+* nodeenv .nenv
+* . .nenv/bin/activate
+* npm i -g gulp
+* npm i
+* npm start
+* Go to `localhost:8000` in browser
+* Every save in this directory should give a new reload

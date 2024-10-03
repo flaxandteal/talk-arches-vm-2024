@@ -1,48 +1,44 @@
-# Square Arches
+# Dashboards
 
 
-### What have open source and NI got in common?
+### What is the point of dashboards?
 
 
-### What was our biggest pain point with Arches?
+### How do we do this?
 
-The learning curve
-
-
-### Why does this matter?
-
-Note: For us to bring devs, infrastructure engineers and data scientists onto Arches projects, we need to have familiar, clean abstractions. Otherwise, we restrict to team members who specialize in Arches, and in its internal structures - realistically, this has been the case, and we are fortunate to have two such developers with us, but for us, practically, familiarity with Arches internals is hard to recruit for, hard to teach and can overspecialise team members. 
+Code examples
 
 
-### How did we deal with this?
+### Could we do this in configuration?
 
-* Web: ArchesORM [beta]
-* IT Admin: Casbin Permissions Manager [alpha]
-* Data: Arches GraphQL Server/Client [alpha]
-* Infrastructure: Arches Kubernetes Toolkit [beta]
+[some people have asked why we don't make configuration files to do this rather than have Python code]
 
-With particular thanks to NI HED, and our other Arches clients
 
-Note: by implementing familiar abstractions.
+### What is the future?
+
+Probably worth looking at the "Active Consultations" workflow
 
 
 
-### ArchesORM
+## Arches ORM
 
-#### Motivation
+### Recap
 
 * Webdevs are used to Object Relational Mappers
-* e.g. `LINQ`, `Fluent`, `SQLAlchemy`
-* Easier to read, write and maintain business logic in a project
-* Runs within an Arches project -- Django and `arches.*` importable
+* Easier to read, write and maintain logic in a project
+* Resource models appear as dynamically-generated classes
 * _Can assume a model has not changed since process restart_
 
 
-#### What have we done?
+### What has happened since Los Angeles?
 
-* In `settings` we give graph IDs of **well-known resource models** (WKRMs)
-* On start, we map the WKRMs by nodegroups
-* WKRMs appear as dynamically-generated classes
+* Permissions auto-integrated to the ORM
+* The ORM can run from a real (Django) database
+* Or static JSON [partial]
+* Or via standard Arches APIs [partial]
+* And mostly the code can be reused (even as a library) between frontend/backend/notebooks
+
+
 * **View models** give native-feeling wrappers for semantic nodes, concepts, etc.
 * Does not unnecessarily create Tiles
 * PoC-level bulk insertion
