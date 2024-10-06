@@ -75,9 +75,13 @@ ash.addresses.append(address)
 ### What have we implemented?
 
 
+<img src="images/permissions.png" style="width: 75%">
+
+
 ### How do we do this?
 
 ```python
+# Create a new person and activity
 admin = Person()
 ash = admin.name.append()
 ash.full_name = "Ash"
@@ -86,6 +90,21 @@ admin.save()
 
 activity = Activity.create()
 activity.save()
+```
+
+
+```python
+# We put the resource (an Activity) in the Root Set.
+st = Set.find(GROUPINGS["permissions"]["root_group"])
+st.members.append(activity)
+st.save()
+```
+
+
+```python
+# Give them nodegroup premissions
+framework.assign_perm("view_resourceinstance", self.group, resource)
+framework.recalculate_table()
 ```
 
 
@@ -130,6 +149,16 @@ st.save()
 
 
 ```python
+# If this set is not nested under the Root Set, the user does not yet
+# have any permissions to its members.
+st.nested_sets.append(subset)
+subset.save()
+st.save()
+_sync_es()
+```
+
+
+```python
 # Add a subgroup
 sg = ArchesGroup.create()
 team_member = Person.create()
@@ -140,6 +169,20 @@ sg.save()
 gp.members.append(sg)
 gp.save()
 ```
+
+
+```python
+# We give the Root Set permissions (RW) to the subgroup member tree.
+permission = sg.permissions.append()
+st = Set.find(GROUPINGS["permissions"]["root_group"])
+permission.object = st
+PermissionType = permission.action.__collection__
+permission.action.append(PermissionType.Reading)
+permission.action.append(PermissionType.Writing)
+sg.save()
+```
+
+Gives access for both the users to both the activities in both sets
 
 
 ```python
@@ -154,8 +197,11 @@ permission.action.append(PermissionType.Writing)
 sg.save()
 ```
 
+this only gives access to the subset activity for the user in the subset group
+
 
 ### What is the future?
+
 
 
 # Dashboards
@@ -270,74 +316,3 @@ return resource_data
 * Flexibility with the card component to handle a range of data
 * Pull more visual information through such as maps
 * Create custom dashboards through safe search
-
-
-
-### GraphQL
-
-#### Motivation
-
-* De-couple data from Arches
-* Self-documenting
-* Standard libraries
-* Easy Python client creation
-
-
-#### What have we done?
-
-* Takes resource models listed in `settings`
-* Uses the ORM to turn them into simple(r) Python structures
-* Maps them to a GraphQL API with graphene
-
-
-#### What have we not done?
-
-* Explored chained searches
-* Tidied up bulk uploading
-
-
-#### What does this look like?
-
-```python
-from arches_graphql_client import ResourceClient
-
-person_client = ResourceClient(
-  "http://example.org",
-  "Person",
-  "label_name"
-)
-person_client.connect()
-```
-
-```python
-person = await person_client.create({
-    "name": [{"fullName": "Ash"}]
-})
-print(person["id"])
-```
-
-```python
-person = await person_client.get(
-  str("0000...0000"),
-  ["id", ("name", ["fullName"])]
-)
-```
-
-
-### Limitations
-
-* (Currently) unaware of changes since startup
-* No special handling of deeply-nested relationships
-* Authorization is not yet integrated - admin or nothing
-* Entirely ignores cards
-* Extremely limited around concepts
-* Does do OAuth, but a nicer flow would help
-
-
-### Opportunities
-
-* Data science
-* Ingestion
-* Syncing
-* Mobile apps
-* Mocking Arches instances?
